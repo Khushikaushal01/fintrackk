@@ -12,7 +12,7 @@ const Budget = () => {
     category: 'Food', amount: '', month: new Date().toISOString().substring(0, 7) // YYYY-MM
   });
 
-  const categories = ['Food', 'Travel', 'Shopping', 'Bills', 'Entertainment', 'Education', 'Health', 'Other'];
+  const categories = ['Total', 'Food', 'Travel', 'Shopping', 'Bills', 'Entertainment', 'Education', 'Health', 'Other'];
 
   useEffect(() => {
     fetchBudgets();
@@ -30,13 +30,14 @@ const Budget = () => {
       const expenses = expenseRes.data;
 
       const budgetsWithSpent = res.data.map(budget => {
-        // Simple logic to calculate spent for the budget's month and category
-        const [year, month] = budget.month.split('-');
+        const year = budget.year;
+        const month = budget.month;
         const spent = expenses.reduce((acc, exp) => {
           const expDate = new Date(exp.date);
-          if (exp.category === budget.category && 
-              expDate.getFullYear() === parseInt(year) && 
-              expDate.getMonth() + 1 === parseInt(month)) {
+          const isSameMonth = expDate.getFullYear() === year && expDate.getMonth() + 1 === month;
+          const isCategoryMatch = budget.category === 'Total' || exp.category === budget.category;
+          
+          if (isSameMonth && isCategoryMatch) {
             return acc + exp.amount;
           }
           return acc;
@@ -55,7 +56,14 @@ const Budget = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await api.post('/budget', formData);
+      const [year, month] = formData.month.split('-');
+      const payload = {
+        category: formData.category,
+        amount: Number(formData.amount),
+        year: parseInt(year),
+        month: parseInt(month)
+      };
+      await api.post('/budget', payload);
       toast.success('Budget set successfully');
       setIsModalOpen(false);
       fetchBudgets();
@@ -114,7 +122,7 @@ const Budget = () => {
                 <div className="flex justify-between items-center mb-4">
                   <h3 className="text-lg font-semibold text-white">{budget.category}</h3>
                   <span className="text-sm font-medium text-slate-400 bg-slate-800 px-3 py-1 rounded-full">
-                    {budget.month}
+                    {budget.year}-{String(budget.month).padStart(2, '0')}
                   </span>
                 </div>
                 

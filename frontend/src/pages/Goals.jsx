@@ -8,6 +8,9 @@ const Goals = () => {
   const [goals, setGoals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateModalOpen, setIsUpdateModalOpen] = useState(false);
+  const [selectedGoal, setSelectedGoal] = useState(null);
+  const [updateAmount, setUpdateAmount] = useState('');
   const [formData, setFormData] = useState({
     title: '', targetAmount: '', currentAmount: 0, deadline: new Date().toISOString().split('T')[0]
   });
@@ -49,6 +52,27 @@ const Goals = () => {
       } catch (error) {
         toast.error('Failed to delete goal');
       }
+    }
+  };
+
+  const handleOpenUpdateModal = (goal) => {
+    setSelectedGoal(goal);
+    setUpdateAmount('');
+    setIsUpdateModalOpen(true);
+  };
+
+  const handleUpdateProgress = async (e) => {
+    e.preventDefault();
+    if (!selectedGoal || !updateAmount) return;
+    
+    try {
+      const newAmount = selectedGoal.currentAmount + Number(updateAmount);
+      await api.put(`/goals/${selectedGoal._id}`, { currentAmount: newAmount });
+      toast.success('Goal progress updated!');
+      setIsUpdateModalOpen(false);
+      fetchGoals();
+    } catch (error) {
+      toast.error('Failed to update goal');
     }
   };
 
@@ -95,12 +119,22 @@ const Goals = () => {
                   <div className="p-3 bg-slate-800 rounded-xl">
                     <Target className={`w-6 h-6 ${isCompleted ? 'text-success' : 'text-purple-500'}`} />
                   </div>
-                  <button 
-                    onClick={() => handleDelete(goal._id)}
-                    className="p-1.5 text-slate-400 hover:text-danger hover:bg-slate-800 rounded-lg transition-colors"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={() => handleOpenUpdateModal(goal)}
+                      className="p-1.5 text-slate-400 hover:text-success hover:bg-slate-800 rounded-lg transition-colors"
+                      title="Add Funds"
+                    >
+                      <Plus className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDelete(goal._id)}
+                      className="p-1.5 text-slate-400 hover:text-danger hover:bg-slate-800 rounded-lg transition-colors"
+                      title="Delete Goal"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
                 <h3 className="text-lg font-semibold text-white mb-1">{goal.title}</h3>
                 <p className="text-sm text-slate-400 mb-4">Target: {new Date(goal.deadline).toLocaleDateString()}</p>
@@ -187,6 +221,48 @@ const Goals = () => {
                   className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-xl transition-colors shadow-lg shadow-purple-600/20"
                 >
                   Save Goal
+                </button>
+              </div>
+            </form>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Update Progress Modal */}
+      {isUpdateModalOpen && selectedGoal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="glass-card rounded-2xl w-full max-w-sm p-6 border border-slate-700"
+          >
+            <h3 className="text-xl font-bold text-white mb-2">Update Progress</h3>
+            <p className="text-slate-400 text-sm mb-6">Adding funds to: {selectedGoal.title}</p>
+            
+            <form onSubmit={handleUpdateProgress} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-slate-300 mb-1">Amount to Add (₹)</label>
+                <input
+                  type="number" required min="1"
+                  value={updateAmount} onChange={e => setUpdateAmount(e.target.value)}
+                  className="w-full px-4 py-2 border border-slate-600 rounded-xl bg-slate-800/50 text-white focus:ring-2 focus:ring-success outline-none"
+                  placeholder="e.g. 500"
+                />
+              </div>
+              
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  type="button"
+                  onClick={() => setIsUpdateModalOpen(false)}
+                  className="px-4 py-2 text-slate-300 hover:bg-slate-800 rounded-xl transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-success hover:bg-emerald-600 text-white rounded-xl transition-colors shadow-lg shadow-success/20"
+                >
+                  Add Funds
                 </button>
               </div>
             </form>

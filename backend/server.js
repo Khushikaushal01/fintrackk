@@ -23,6 +23,7 @@ app.use('/api/expenses', require('./routes/expenseRoutes'));
 app.use('/api/income', require('./routes/incomeRoutes'));
 app.use('/api/budget', require('./routes/budgetRoutes'));
 app.use('/api/goals', require('./routes/goalRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // Error handling middleware
 app.use(errorHandler);

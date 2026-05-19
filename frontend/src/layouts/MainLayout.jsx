@@ -13,6 +13,7 @@ import {
   X
 } from 'lucide-react';
 import { useState } from 'react';
+import AIAssistant from '../components/AIAssistant';
 
 const MainLayout = () => {
   const { user, logout } = useAuth();
@@ -133,6 +134,9 @@ const MainLayout = () => {
           <Outlet />
         </main>
       </div>
+
+      {/* AI Assistant Floating Widget */}
+      <AIAssistant />
     </div>
   );
 };

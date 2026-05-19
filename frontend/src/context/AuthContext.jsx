@@ -43,7 +43,7 @@ export const AuthProvider = ({ children }) => {
 
   const register = async (name, email, password) => {
     try {
-      const res = await api.post('/auth/register', { name, email, password });
+      const res = await api.post('/auth/register', { fullName: name, email, password });
       localStorage.setItem('token', res.data.token);
       setUser(res.data);
       toast.success('Account created successfully!');

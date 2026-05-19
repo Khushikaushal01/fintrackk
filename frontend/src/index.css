@@ -1,14 +1,29 @@
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #4F46E5;
-  --color-primary-dark: #4338CA;
+  /* Blue Fog as main primary colors */
+  --color-primary: #7A94A3;
+  --color-primary-dark: #5B7380;
+  
   --color-success: #10B981;
   --color-danger: #EF4444;
   --color-warning: #F59E0B;
   
-  --color-background-dark: #0f172a;
-  --color-card-dark: #1e293b;
+  /* Deep Blue Fog variations for the background and cards */
+  --color-background-dark: #1A242B;
+  --color-card-dark: #2A3B47;
+
+  /* Overriding default white/slate to Sheepskin accents for beautiful contrast */
+  --color-white: #F4E2C6;
+  --color-slate-100: #F4E2C6;
+  --color-slate-300: #D8C6A8;
+  --color-slate-400: #BCA98A;
+  
+  /* Tinting the dark borders/inputs with Blue Fog */
+  --color-slate-600: #4B6373;
+  --color-slate-700: #3C505E;
+  --color-slate-800: #2D3D49;
+  --color-slate-900: #1E2A34;
 }
 
 @layer base {
